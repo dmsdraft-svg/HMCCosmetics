@@ -2,14 +2,18 @@ name: Build HMCCosmetics
 
 on:
   push:
-    branches: [ "main", "master", "remapped" ]
-  workflow_dispatch:
+    branches: [ "main", "remapped" ]
+  pull_request:
+    branches: [ "main", "remapped" ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Set up JDK 21
@@ -17,22 +21,17 @@ jobs:
         with:
           java-version: '21'
           distribution: 'temurin'
+          cache: gradle
 
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
 
-      - name: Build all modules
-        run: ./gradlew clean build
+      - name: Build with Gradle (ShadowJar)
+        run: ./gradlew shadowJar --no-daemon
 
-      - name: Build remapped JAR
-        run: ./gradlew remapJar
-
-      - name: Upload all artifacts
+      - name: Upload built JAR
         uses: actions/upload-artifact@v4
         with:
-          name: HMCCosmetics-Full-Build
-          path: |
-            **/build/libs/*.jar
-            !**/*-sources.jar
-            !**/*-javadoc.jar
-          retention-days: 7
+          name: HMCCosmetics-Build
+          path: build/libs/HMCCosmeticsRemapped-*.jar
+          if-no-files-found: error
