@@ -2,7 +2,7 @@ name: Build HMCCosmetics
 
 on:
   push:
-    branches: [ "remapped", "main", "master" ]
+    branches: [ "main", "master", "remapped" ]
   workflow_dispatch:
 
 jobs:
@@ -21,7 +21,7 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Build all modules with Gradle
+      - name: Build with Gradle
         run: ./gradlew build
 
       - name: Upload all JARs
@@ -32,3 +32,4 @@ jobs:
             **/build/libs/*.jar
             !**/build/libs/*-sources.jar
             !**/build/libs/*-javadoc.jar
+          retention-days: 7
