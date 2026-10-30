@@ -21,15 +21,18 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Build with Gradle
-        run: ./gradlew build
+      - name: Build all modules
+        run: ./gradlew clean build
 
-      - name: Upload all JARs
+      - name: Build remapped JAR
+        run: ./gradlew remapJar
+
+      - name: Upload all artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: HMCCosmetics-All-Modules
+          name: HMCCosmetics-Full-Build
           path: |
             **/build/libs/*.jar
-            !**/build/libs/*-sources.jar
-            !**/build/libs/*-javadoc.jar
+            !**/*-sources.jar
+            !**/*-javadoc.jar
           retention-days: 7
